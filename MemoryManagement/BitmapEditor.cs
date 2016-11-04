@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,15 +20,13 @@ namespace MemoryManagement
             this.bitmap = bitmap;
         }
 
-        public void SetPixel(int x, int y, byte r, byte g, byte b) 
+        public void SetPixel(int x, int y, byte r, byte g, byte b)
         {
-            CheckIndex(x, y);
-
-            bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+            bitmapData = bitmap.LockBits(new Rectangle(x, y, 1, 1), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
 
             unsafe
             {
-                var index = (byte*)bitmapData.Scan0 + (y * bitmapData.Stride) + x * bitmapData.Stride / bitmap.Width;
+                var index = (byte*) bitmapData.Scan0;
                 index[0] = b;
                 index[1] = g;
                 index[2] = r;
@@ -36,20 +35,13 @@ namespace MemoryManagement
 
         public Color GetPixel(int x, int y)
         {
-            CheckIndex(x, y);
-
-            bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+            bitmapData = bitmap.LockBits(new Rectangle(x, y, 1, 1), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
 
             unsafe
             {
-                var index = (byte*)bitmapData.Scan0 + (y * bitmapData.Stride) + x * bitmapData.Stride / bitmap.Width;
+                var index = (byte*) bitmapData.Scan0;
                 return Color.FromArgb(index[2], index[1], index[0]);
             }
-        }
-
-        private void CheckIndex(int x, int y)
-        {
-            if(x >= bitmap.Width || y >= bitmap.Height) throw new ArgumentException();
         }
 
         #region IDisposable Support
@@ -66,7 +58,7 @@ namespace MemoryManagement
                 disposedValue = true;
             }
         }
-    
+
         ~BitmapEditor()
         {
             Dispose(false);
