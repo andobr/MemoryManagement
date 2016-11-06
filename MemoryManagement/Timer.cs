@@ -16,7 +16,6 @@ namespace MemoryManagement
         public Timer Start()
         {
             watch = Stopwatch.StartNew();
-            watch.Start();
             return this;
         }
 
