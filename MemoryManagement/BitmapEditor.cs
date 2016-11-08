@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MemoryManagement
 {
@@ -13,35 +8,35 @@ namespace MemoryManagement
     {
         private readonly Bitmap bitmap;
 
-        private BitmapData bitmapData;
+        private readonly BitmapData bitmapData;
 
         public BitmapEditor(Bitmap bitmap)
         {
             this.bitmap = bitmap;
+            bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), 
+                ImageLockMode.WriteOnly, bitmap.PixelFormat);          
         }
 
-        public void SetPixel(int x, int y, byte r, byte g, byte b)
+        public unsafe void SetPixel(int x, int y, byte r, byte g, byte b)
         {
-            bitmapData = bitmap.LockBits(new Rectangle(x, y, 1, 1), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
-
-            unsafe
-            {
-                var index = (byte*) bitmapData.Scan0;
-                index[0] = b;
-                index[1] = g;
-                index[2] = r;
-            }
+            CheckIndex(x, y);
+            var index = (byte*)bitmapData.Scan0 + y * bitmapData.Stride + x * bitmapData.Stride / bitmapData.Width;
+            index[0] = b;
+            index[1] = g;
+            index[2] = r;
         }
 
-        public Color GetPixel(int x, int y)
+        public unsafe Color GetPixel(int x, int y)
         {
-            bitmapData = bitmap.LockBits(new Rectangle(x, y, 1, 1), ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
+            CheckIndex(x, y);           
+            var index = (byte*) bitmapData.Scan0 + y * bitmapData.Stride + x * bitmapData.Stride / bitmapData.Width;
+            return Color.FromArgb(index[2], index[1], index[0]);
+        }
 
-            unsafe
-            {
-                var index = (byte*) bitmapData.Scan0;
-                return Color.FromArgb(index[2], index[1], index[0]);
-            }
+        private void CheckIndex(int x, int y)
+        {
+            if(x > bitmap.Width || y > bitmap.Height)
+                throw new ArgumentException();
         }
 
         #region IDisposable Support

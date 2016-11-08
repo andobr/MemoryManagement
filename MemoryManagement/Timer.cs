@@ -1,27 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MemoryManagement
 {
-    public class Timer : IDisposable
+    public class Timer : Stopwatch, IDisposable
     {
-        private Stopwatch watch;
-
-        public long ElapsedMilliseconds => watch.ElapsedMilliseconds;
-
-        public Timer Start()
+        public new Timer Start()
         {
-            watch = Stopwatch.StartNew();
+            Restart();
             return this;
         }
 
         public Timer Continue()
         {
-            watch.Start();
+            base.Start();
             return this;
         }
 
@@ -34,7 +26,7 @@ namespace MemoryManagement
             {
                 if (disposing)
                 {
-                    watch.Stop();
+                    Stop();
                 }
                 disposedValue = true;
             }

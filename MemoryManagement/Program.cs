@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Drawing;
 
 namespace MemoryManagement
@@ -33,20 +28,17 @@ namespace MemoryManagement
             }
             Console.WriteLine(timer.ElapsedMilliseconds);
 
+            Console.WriteLine(timer.ElapsedTicks);
 
             var bitmap = (Bitmap)Image.FromFile(@"C:\Users\Anton\Documents\Visual Studio 2015\Projects\Photoshop\cat.jpg");
 
             using (timer.Start())
             {
-                for (int i = 0; i < bitmap.Width; i++)
-                {
-                    for (int j = 0; j < bitmap.Height; j++)
-                    {
-                        using (var bitmapEditor = new BitmapEditor(bitmap))
-                        {
+                using (var bitmapEditor = new BitmapEditor(bitmap))
+                { 
+                    for (int i = 0; i < bitmap.Width; i++)
+                        for (int j = 0; j < bitmap.Height; j++)
                             bitmapEditor.SetPixel(i, j, 0, 0, 0);
-                        }
-                    }
                 }
             }
             Console.WriteLine(timer.ElapsedMilliseconds);
@@ -54,12 +46,8 @@ namespace MemoryManagement
             using (timer.Start())
             {
                 for (int i = 0; i < bitmap.Width; i++)
-                {
                     for (int j = 0; j < bitmap.Height; j++)
-                    {
-                        bitmap.SetPixel(i, j, Color.Black);
-                    }
-                }
+                        bitmap.SetPixel(i, j, Color.White);
             }
             Console.WriteLine(timer.ElapsedMilliseconds);
 
