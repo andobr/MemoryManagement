@@ -5,7 +5,7 @@ namespace MemoryManagement
 {
     public class Timer : Stopwatch, IDisposable
     {
-        public new Timer Start()
+        public Timer Run()
         {
             Restart();
             return this;
@@ -13,7 +13,7 @@ namespace MemoryManagement
 
         public Timer Continue()
         {
-            base.Start();
+            Start();
             return this;
         }
 

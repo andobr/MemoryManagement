@@ -10,7 +10,7 @@ namespace MemoryManagement
         {
             var timer = new Timer();
 
-            using (timer.Start())
+            using (timer.Run())
             {
                 Thread.Sleep(1000);
             }
@@ -22,7 +22,7 @@ namespace MemoryManagement
             }
             Console.WriteLine(timer.ElapsedMilliseconds);
 
-            using (timer.Start())
+            using (timer.Run())
             {
                 Thread.Sleep(1000);
             }
@@ -32,7 +32,7 @@ namespace MemoryManagement
 
             var bitmap = (Bitmap)Image.FromFile(@"C:\Users\Anton\Documents\Visual Studio 2015\Projects\Photoshop\cat.jpg");
 
-            using (timer.Start())
+            using (timer.Run())
             {
                 using (var bitmapEditor = new BitmapEditor(bitmap))
                 { 
@@ -43,7 +43,7 @@ namespace MemoryManagement
             }
             Console.WriteLine(timer.ElapsedMilliseconds);
 
-            using (timer.Start())
+            using (timer.Run())
             {
                 for (int i = 0; i < bitmap.Width; i++)
                     for (int j = 0; j < bitmap.Height; j++)
