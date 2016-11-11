@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 namespace MemoryManagement
 {
@@ -17,20 +18,21 @@ namespace MemoryManagement
                 ImageLockMode.WriteOnly, bitmap.PixelFormat);          
         }
 
-        public unsafe void SetPixel(int x, int y, byte r, byte g, byte b)
+        public void SetPixel(int x, int y, byte r, byte g, byte b)
         {
             CheckIndex(x, y);
-            var index = (byte*)bitmapData.Scan0 + y * bitmapData.Stride + x * bitmapData.Stride / bitmapData.Width;
-            index[0] = b;
-            index[1] = g;
-            index[2] = r;
+            var color = new byte[] { b, g, r };
+            var index = bitmapData.Scan0 + y * bitmapData.Stride + x * bitmapData.Stride / bitmapData.Width;
+            Marshal.Copy(color, 0, index, color.Length);
         }
 
-        public unsafe Color GetPixel(int x, int y)
+        public Color GetPixel(int x, int y)
         {
-            CheckIndex(x, y);           
-            var index = (byte*) bitmapData.Scan0 + y * bitmapData.Stride + x * bitmapData.Stride / bitmapData.Width;
-            return Color.FromArgb(index[2], index[1], index[0]);
+            CheckIndex(x, y);
+            var color = new byte[3];
+            var index = bitmapData.Scan0 + y * bitmapData.Stride + x * bitmapData.Stride / bitmapData.Width;
+            Marshal.Copy(index, color, 0, color.Length);
+            return Color.FromArgb(color[2], color[1], color[0]);
         }
 
         private void CheckIndex(int x, int y)
