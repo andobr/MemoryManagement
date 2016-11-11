@@ -14,15 +14,15 @@ namespace MemoryManagement
         public BitmapEditor(Bitmap bitmap)
         {
             this.bitmap = bitmap;
-            bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), 
-                ImageLockMode.WriteOnly, bitmap.PixelFormat);          
+            bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height),
+                ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
         }
 
         public void SetPixel(int x, int y, byte r, byte g, byte b)
         {
             CheckIndex(x, y);
             var color = new byte[] { b, g, r };
-            var index = bitmapData.Scan0 + y * bitmapData.Stride + x * bitmapData.Stride / bitmapData.Width;
+            var index = bitmapData.Scan0 + y * bitmapData.Stride + x * 3;
             Marshal.Copy(color, 0, index, color.Length);
         }
 
@@ -30,15 +30,15 @@ namespace MemoryManagement
         {
             CheckIndex(x, y);
             var color = new byte[3];
-            var index = bitmapData.Scan0 + y * bitmapData.Stride + x * bitmapData.Stride / bitmapData.Width;
+            var index = bitmapData.Scan0 + y * bitmapData.Stride + x * 3;
             Marshal.Copy(index, color, 0, color.Length);
             return Color.FromArgb(color[2], color[1], color[0]);
         }
 
         private void CheckIndex(int x, int y)
         {
-            if(x > bitmap.Width || y > bitmap.Height)
-                throw new ArgumentException();
+            if (x >= bitmap.Width || y >= bitmap.Height)
+                throw new ArgumentOutOfRangeException();
         }
 
         #region IDisposable Support
